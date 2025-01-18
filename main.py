@@ -12,24 +12,25 @@ class Field:
         self.wolfs = [Wolf() for i in range(wolfrange)]
         self.rabbits = [Rabbit() for i in range(rabbitrange)]
         self.grasses = [Grass() for i in range(grassrange)]
+        self.entities = [self.wolfs,self.rabbits]
         self.wolf = wolfrange
         self.rabbit = rabbitrange
         self.grass = grassrange
 
     def step(self):
+        for entity in self.entities:
+            for e in entity:
+                e.live()
+                self.update(e)
+                self.consume(e)
+                self.produce(e)
+                # print('Log')
+                # print(e.name,e.lifespan,e.food)
+                # print('+++++++++++++++')
+                
         self.wolf = len(self.wolfs)
         self.rabbit = len(self.rabbits)
         self.grass = len(self.grasses)
-        for w in self.wolfs:
-            w.live()
-            self.update(w)
-            self.consume(w)
-            self.produce(w)
-        for r in self.rabbits:
-            r.live()
-            self.update(r)
-            self.consume(r)
-            self.produce(r)
 
         if len(self.grasses) <= 0 :
             self.grasses.append(Grass())
