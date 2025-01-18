@@ -19,9 +19,6 @@ class Field:
         self.rabbits = [Rabbit() for i in range(rabbitrange)]
         self.grasses = [Grass() for i in range(grassrange)]
         self.entities = (self.wolfs,self.rabbits)
-        self.wolf = wolfrange
-        self.rabbit = rabbitrange
-        self.grass = grassrange
 
     def step(self):
         for entity in self.entities:
@@ -30,11 +27,6 @@ class Field:
                 self.update(e)
                 self.consume(e)
                 self.produce(e)
-                
-        self.wolf = len(self.wolfs)
-        self.rabbit = len(self.rabbits)
-        self.grass = len(self.grasses)
-
                 self.log(e)
                
         if len(self.grasses) <= 0 :
@@ -58,20 +50,19 @@ class Field:
 
     @rng
     def consume(self,X):
-        if isinstance(X,Grass):
+        if X.food >= X.maxfood:
             return
-        if X.food < X.maxfood:
-            match X:
-                case Rabbit():
-                    if len(self.grasses) > 0:
-                        X.food += X.nutrient
-                        X.lifespan = X.maxlifespan
-                        self.grasses.pop(random.randrange(len(self.grasses)))
-                case Wolf():
-                    if len(self.rabbits) > 0:
-                        X.food += X.nutrient
-                        X.lifespan = X.maxlifespan
-                        self.rabbits.pop(random.randrange(len(self.rabbits)))
+        match X:
+            case Rabbit():
+                if len(self.grasses) > 0:
+                    X.food += X.nutrient
+                    X.lifespan = X.maxlifespan
+                    self.grasses.pop(random.randrange(len(self.grasses)))
+            case Wolf():
+                if len(self.rabbits) > 0:
+                    X.food += X.nutrient
+                    X.lifespan = X.maxlifespan
+                    self.rabbits.pop(random.randrange(len(self.rabbits)))
 
     @rng
     def produce(self,X):
@@ -79,13 +70,13 @@ class Field:
             for i in range(X.growth):
                 self.grasses.append(Grass())
             return
-        if X.food >= X.reproducefood and X.age >= X.reproduceage:
-            match X:
-                case Rabbit():
-                    self.rabbits.append(Rabbit())
-                case Wolf():
-                    self.wolfs.append(Wolf())
-
+        if X.food < X.reproducefood or X.age < X.reproduceage:
+            return
+        match X:
+            case Rabbit():
+                self.rabbits.append(Rabbit())
+            case Wolf():
+                self.wolfs.append(Wolf())
 
 class Grass():
     def __init__(self):
@@ -123,11 +114,11 @@ class Animal():
 
 class Rabbit(Animal):
     def __init__(self):
-        super().__init__(__name__,nutrient=10,maxfood=45,metabo=3,reproduceage=10,reproducefood=40,maxage=25,lifespan=3)
+        super().__init__("Rabbit",nutrient=10,maxfood=45,metabo=3,reproduceage=10,reproducefood=40,maxage=25,lifespan=3)
     
 class Wolf(Animal):
     def __init__(self):
-        super().__init__(__name__,nutrient=10,maxfood=200,metabo=2,reproduceage=10,reproducefood=120,maxage=50,lifespan=2)
+        super().__init__(__class__.__name__,nutrient=10,maxfood=200,metabo=2,reproduceage=10,reproducefood=120,maxage=50,lifespan=2)
     
 def main(round,seed:Optional[int]):
     if seed is None:
@@ -138,9 +129,9 @@ def main(round,seed:Optional[int]):
     log = []
     while step < round:
         print(f"Round: {step}")
-        print(f"Grass:{env.grass}")
-        print(f"Rabbit:{env.rabbit}")
-        print(f"Wolf:{env.wolf}")
+        print(f"Grass:{len(env.grasses)}")
+        print(f"Rabbit:{len(env.rabbits)}")
+        print(f"Wolf:{len(env.wolfs)}")
         print(f"=============================")
         
         log.append(dict(Round=step,Grass=len(env.grasses),Rabbit=len(env.rabbits),Wolf=len(env.wolfs)))
