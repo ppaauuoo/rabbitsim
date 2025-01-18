@@ -1,4 +1,8 @@
 import random
+import pandas as pd
+import seaborn as sns
+import matplotlib.pyplot as plt
+import sys
 
 def rng(func):
     def wrapper(self, *args, **kwargs):
@@ -44,7 +48,6 @@ class Field:
                 self.rabbits.remove(X)
             case Wolf():
                 self.wolfs.remove(X)
-
 
     @rng
     def consume(self,X):
@@ -117,20 +120,38 @@ class Rabbit(Animal):
     
 class Wolf(Animal):
     def __init__(self):
-        super().__init__(__name__,nutrient=20,maxfood=200,metabo=2,reproduceage=10,reproducefood=120,maxage=50,lifespan=2)
-
-def main(round:int):
-    field = Field(2,20,400)
+        super().__init__(__name__,nutrient=10,maxfood=200,metabo=2,reproduceage=10,reproducefood=120,maxage=50,lifespan=2)
+    
+def main(round,seed = random.randrange(sys.maxsize)):
+    random.seed(seed)
+    env = Field(2,20,400)
     step = 0
+    log = []
     while step < round:
         print(f"Round: {step}")
-        print(f"Grass:{field.grass}")
-        print(f"Rabbit:{field.rabbit}")
-        print(f"Wolf:{field.wolf}")
+        print(f"Grass:{env.grass}")
+        print(f"Rabbit:{env.rabbit}")
+        print(f"Wolf:{env.wolf}")
         print(f"=============================")
-        field.step()
+        
+        log.append(dict(Round=step,Grass=len(env.grasses),Rabbit=len(env.rabbits),Wolf=len(env.wolfs)))
+        env.step()
         step += 1
+    
+    print(f"Seed:{seed}")
+    data = pd.DataFrame(log)
+    
+    sns.lineplot(data=data, x='Round', y='Grass', label='Grass')
+    sns.lineplot(data=data, x='Round', y='Rabbit', label='Rabbit')
+    sns.lineplot(data=data, x='Round', y='Wolf', label='Wolf')
+    
+    plt.title(f"Seed:{seed}")
+    plt.xlabel('Round')
+    plt.ylabel('Population')
+    plt.grid(True)
+    plt.show()
 
 if __name__ == "__main__":
-    main(200)
+    main(100,7495055989988120033)
+    # rabbit survive : 7495055989988120033
 
