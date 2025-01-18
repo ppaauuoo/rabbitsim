@@ -1,5 +1,12 @@
 import random
 
+def rng(func):
+    def wrapper(self, *args, **kwargs):
+        if random.randrange(2) > 0:
+            return
+        return func(self, *args, **kwargs)
+    return wrapper
+
 class Field:
     def __init__(self,wolfrange,rabbitrange,grassrange):
         self.wolfs = [Wolf() for i in range(wolfrange)]
@@ -38,10 +45,9 @@ class Field:
                 self.wolfs.remove(X)
 
 
+    @rng
     def consume(self,X):
         if isinstance(X,Grass):
-            return
-        if random.randrange(2) > 0:
             return
         if X.food < X.maxfood:
             match X:
@@ -56,6 +62,7 @@ class Field:
                         X.lifespan = X.maxlifespan
                         self.rabbits.pop()
 
+    @rng
     def produce(self,X):
         if X is None:
             return
@@ -63,8 +70,6 @@ class Field:
             for i in range(X.growth):
                 self.grasses.append(Grass())
             return
-        # if random.randrange(2) > 0:
-        #     return
         if X.food >= X.reproducefood and X.age >= X.reproduceage:
             match X:
                 case Rabbit():
