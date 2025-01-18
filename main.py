@@ -58,12 +58,12 @@ class Field:
                     if len(self.grasses) > 0:
                         X.food += X.nutrient
                         X.lifespan = X.maxlifespan
-                        self.grasses.pop()
+                        self.grasses.pop(random.randrange(len(self.grasses)))
                 case Wolf():
                     if len(self.rabbits) > 0:
                         X.food += X.nutrient
                         X.lifespan = X.maxlifespan
-                        self.rabbits.pop()
+                        self.rabbits.pop(random.randrange(len(self.rabbits)))
 
     @rng
     def produce(self,X):
