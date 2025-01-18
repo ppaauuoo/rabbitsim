@@ -37,6 +37,8 @@ class Field:
         self.produce(self.grasses[0])
 
     def update(self,X):
+        if isinstance(X,Grass):
+            return
         if not X.dead:
             return
         match X:
@@ -65,8 +67,6 @@ class Field:
 
     @rng
     def produce(self,X):
-        if X is None:
-            return
         if isinstance(X,Grass):
             for i in range(X.growth):
                 self.grasses.append(Grass())
@@ -79,15 +79,47 @@ class Field:
                     self.wolfs.append(Wolf())
 
 
-class Grass(Field):
+class Grass():
     def __init__(self):
         self.max = 400
         self.growth = 5
-        self.reproduceage = 10
-        self.dead = False
+    
+    def live(self):
+        pass
 
-class Rabbit(Field):
+class Animal():
     def __init__(self):
+        self.name = 'NA'
+        self.nutrient = 10
+        self.food = 0
+        self.maxfood = 45
+        self.metabo = 3
+        self.reproduceage = 10
+        self.reproducefood = 40
+        self.age = 0
+        self.maxage = 25
+        self.lifespan = 3
+        self.maxlifespan = 3
+        self.dead = False
+        
+    def live(self):
+        self.age +=1
+        self.hunger()
+        self.die()
+
+    def hunger(self):
+        if self.food <=0:
+            self.lifespan -= 1
+            return
+        self.food -= self.metabo
+        
+    def die(self):
+        if self.lifespan <= 0 or self.age >= self.maxage:
+            self.dead = True
+
+class Rabbit(Animal):
+    def __init__(self):
+        self.name = 'Rabbit'
         self.nutrient = 10
         self.food = 0
         self.maxfood = 45
@@ -100,26 +132,11 @@ class Rabbit(Field):
         self.maxlifespan = 3
         self.dead = False
 
-    def live(self):
-        if self.dead:
-            return
-
-        self.age +=1
-        self.food -= self.metabo
-        if self.food <=0:
-            self.food = 0
-            self.lifespan -= 1
-        self.die()
-
-
-    def die(self):
-        if self.food and self.lifespan == 0 or self.age >= self.maxage:
-            self.dead = True
-
-
-class Wolf(Field):
+    
+class Wolf(Animal):
     def __init__(self):
-        self.nutrient = 10
+        self.name = 'Wolf'
+        self.nutrient = 20
         self.food = 0
         self.maxfood = 200
         self.metabo = 2
@@ -131,33 +148,18 @@ class Wolf(Field):
         self.maxlifespan = 2
         self.dead = False
 
-    def live(self):
-        if self.dead:
-            return
-
-        self.age +=1
-        self.food -= self.metabo
-        if self.food <=0:
-            self.food = 0
-            self.lifespan -= 1
-        self.die()
-
-    def die(self):
-        if self.food and self.lifespan == 0 or self.age >= self.maxage:
-            self.dead = True
-
-def main():
-    start = 0
+def main(round:int):
     field = Field(1,20,400)
-    while start < 100:
-        print(f"Round: {start}")
+    step = 0
+    while step < round:
+        print(f"Round: {step}")
         print(f"Grass:{field.grass}")
         print(f"Rabbit:{field.rabbit}")
         print(f"Wolf:{field.wolf}")
         print(f"=============================")
         field.step()
-        start += 1
+        step += 1
 
 if __name__ == "__main__":
-    main()
+    main(200)
 
