@@ -83,23 +83,20 @@ class Grass():
     def __init__(self):
         self.max = 400
         self.growth = 5
-    
-    def live(self):
-        pass
 
 class Animal():
-    def __init__(self):
-        self.name = 'NA'
-        self.nutrient = 10
+    def __init__(self,name,nutrient,maxfood,metabo,reproducefood,reproduceage,maxage,lifespan):
+        self.name = name
+        self.nutrient = nutrient
         self.food = 0
-        self.maxfood = 45
-        self.metabo = 3
-        self.reproduceage = 10
-        self.reproducefood = 40
+        self.maxfood = maxfood
+        self.metabo = metabo
+        self.reproduceage = reproduceage
+        self.reproducefood = reproducefood
         self.age = 0
-        self.maxage = 25
-        self.lifespan = 3
-        self.maxlifespan = 3
+        self.maxage = maxage
+        self.lifespan = lifespan
+        self.maxlifespan = lifespan
         self.dead = False
         
     def live(self):
@@ -119,34 +116,11 @@ class Animal():
 
 class Rabbit(Animal):
     def __init__(self):
-        self.name = 'Rabbit'
-        self.nutrient = 10
-        self.food = 0
-        self.maxfood = 45
-        self.metabo = 3
-        self.reproduceage = 10
-        self.reproducefood = 40
-        self.age = 0
-        self.maxage = 25
-        self.lifespan = 3
-        self.maxlifespan = 3
-        self.dead = False
-
+        super().__init__('Rabbit',nutrient=10,maxfood=45,metabo=3,reproduceage=10,reproducefood=40,maxage=25,lifespan=3)
     
 class Wolf(Animal):
     def __init__(self):
-        self.name = 'Wolf'
-        self.nutrient = 20
-        self.food = 0
-        self.maxfood = 200
-        self.metabo = 2
-        self.reproduceage = 10
-        self.reproducefood = 120
-        self.age = 0
-        self.maxage = 50
-        self.lifespan = 2
-        self.maxlifespan = 2
-        self.dead = False
+        super().__init__('Wolf',nutrient=20,maxfood=200,metabo=2,reproduceage=10,reproducefood=120,maxage=50,lifespan=2)
 
 def main(round:int):
     field = Field(1,20,400)
