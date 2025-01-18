@@ -3,6 +3,8 @@ import pandas as pd
 import seaborn as sns
 import matplotlib.pyplot as plt
 import sys
+import argparse
+from typing import Optional
 
 def rng(func):
     def wrapper(self, *args, **kwargs):
@@ -122,7 +124,9 @@ class Wolf(Animal):
     def __init__(self):
         super().__init__(__name__,nutrient=10,maxfood=200,metabo=2,reproduceage=10,reproducefood=120,maxage=50,lifespan=2)
     
-def main(round,seed = random.randrange(sys.maxsize)):
+def main(round,seed:Optional[int]):
+    if seed is None:
+        seed = random.randrange(sys.maxsize)
     random.seed(seed)
     env = Field(2,20,400)
     step = 0
@@ -152,6 +156,13 @@ def main(round,seed = random.randrange(sys.maxsize)):
     plt.show()
 
 if __name__ == "__main__":
-    main(100,7495055989988120033)
+    parser = argparse.ArgumentParser(
+        description="Rabbit and Wolf simulation"
+    )
+    parser.add_argument("-r","--round", required=False, type=int, default=100, help="Number of Round")
+    parser.add_argument("-s","--seed", required=False, type=int, help="Number of Seed")
+    args = parser.parse_args()
+
+    main(args.round,args.seed)
     # rabbit survive : 7495055989988120033
 
