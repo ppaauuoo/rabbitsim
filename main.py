@@ -30,17 +30,22 @@ class Field:
                 self.update(e)
                 self.consume(e)
                 self.produce(e)
-                # print('Log')
-                # print(e.name,e.lifespan,e.food)
-                # print('+++++++++++++++')
                 
         self.wolf = len(self.wolfs)
         self.rabbit = len(self.rabbits)
         self.grass = len(self.grasses)
 
+                self.log(e)
+               
         if len(self.grasses) <= 0 :
             self.grasses.append(Grass())
         self.produce(self.grasses[0])
+
+    @staticmethod
+    def log(e):
+        print('Log')
+        print(e.name,e.lifespan,e.food)
+        print('+++++++++++++++')
 
     def update(self,X):
         if not X.dead:
