@@ -12,7 +12,7 @@ class Field:
         self.wolfs = [Wolf() for i in range(wolfrange)]
         self.rabbits = [Rabbit() for i in range(rabbitrange)]
         self.grasses = [Grass() for i in range(grassrange)]
-        self.entities = [self.wolfs,self.rabbits]
+        self.entities = (self.wolfs,self.rabbits)
         self.wolf = wolfrange
         self.rabbit = rabbitrange
         self.grass = grassrange
@@ -37,8 +37,6 @@ class Field:
         self.produce(self.grasses[0])
 
     def update(self,X):
-        if isinstance(X,Grass):
-            return
         if not X.dead:
             return
         match X:
@@ -111,19 +109,18 @@ class Animal():
         self.food -= self.metabo
         
     def die(self):
-        if self.lifespan <= 0 or self.age >= self.maxage:
-            self.dead = True
+        if self.lifespan <= 0 or self.age >= self.maxage: self.dead = True
 
 class Rabbit(Animal):
     def __init__(self):
-        super().__init__('Rabbit',nutrient=10,maxfood=45,metabo=3,reproduceage=10,reproducefood=40,maxage=25,lifespan=3)
+        super().__init__(__name__,nutrient=10,maxfood=45,metabo=3,reproduceage=10,reproducefood=40,maxage=25,lifespan=3)
     
 class Wolf(Animal):
     def __init__(self):
-        super().__init__('Wolf',nutrient=20,maxfood=200,metabo=2,reproduceage=10,reproducefood=120,maxage=50,lifespan=2)
+        super().__init__(__name__,nutrient=20,maxfood=200,metabo=2,reproduceage=10,reproducefood=120,maxage=50,lifespan=2)
 
 def main(round:int):
-    field = Field(1,20,400)
+    field = Field(2,20,400)
     step = 0
     while step < round:
         print(f"Round: {step}")
