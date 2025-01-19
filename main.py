@@ -14,7 +14,7 @@ def rng(func):
     return wrapper
 
 class Field:
-    def __init__(self,wolfrange,rabbitrange,grassrange):
+    def __init__(self,wolfrange:int,rabbitrange:int,grassrange:int):
         self.wolfs = [Wolf() for i in range(wolfrange)]
         self.rabbits = [Rabbit() for i in range(rabbitrange)]
         self.grasses = [Grass() for i in range(grassrange)]
@@ -44,7 +44,7 @@ class Field:
             print(X.name,X.lifespan,X.food)
         print('+++++++++++++')
 
-    def update(self,X):
+    def update(self,X:object)->None:
         if not X.dead:
             return
         match X:
@@ -54,7 +54,7 @@ class Field:
                 self.wolfs.remove(X)
 
     @rng
-    def consume(self,X):
+    def consume(self,X:object)->None:
         if X.food >= X.maxfood:
             return
         match X:
@@ -70,7 +70,7 @@ class Field:
                     self.rabbits.pop(random.randrange(len(self.rabbits)))
 
     @rng
-    def produce(self,X):
+    def produce(self,X:object)->None:
         if isinstance(X,Grass):
             for i in range(X.growth):
                 self.grasses.append(Grass())
@@ -89,7 +89,7 @@ class Grass():
         self.growth = 5
 
 class Animal():
-    def __init__(self,name,nutrient,maxfood,metabo,reproducefood,reproduceage,maxage,lifespan):
+    def __init__(self,name:str,nutrient:int,maxfood:int,metabo:int,reproducefood:int,reproduceage:int,maxage:int,lifespan:int):
         self.name = name
         self.nutrient = nutrient
         self.food = 0
@@ -103,18 +103,18 @@ class Animal():
         self.maxlifespan = lifespan
         self.dead = False
         
-    def live(self):
+    def live(self)->None:
         self.age +=1
         self.hunger()
         self.die()
 
-    def hunger(self):
+    def hunger(self)->None:
         if self.food <=0:
             self.lifespan -= 1
             return
         self.food -= self.metabo
         
-    def die(self):
+    def die(self)->None:
         if self.lifespan <= 0 or self.age >= self.maxage: self.dead = True
 
 class Rabbit(Animal):
@@ -125,25 +125,19 @@ class Wolf(Animal):
     def __init__(self):
         super().__init__(__class__.__name__,nutrient=10,maxfood=200,metabo=2,reproduceage=10,reproducefood=120,maxage=50,lifespan=2)
     
-def main(round,seed:Optional[int]):
 def main(round:int,seed:Optional[int],logging:Optional[bool],debug:Optional[bool]) -> None:
     if seed is None:
         seed = random.randrange(sys.maxsize)
     random.seed(seed)
     env = Field(2,20,400)
-    step = 0
     log = []
-    while step < round:
+    for step in range(round):
         print(f"Round: {step}")
         print(f"Grass:{len(env.grasses)}")
         print(f"Rabbit:{len(env.rabbits)}")
         print(f"Wolf:{len(env.wolfs)}")
         print(f"=============================")
-        
         log.append(dict(Round=step,Grass=len(env.grasses),Rabbit=len(env.rabbits),Wolf=len(env.wolfs)))
-        env.step()
-        step += 1
-    
         env.step(debug)
     print(f"Seed:{seed}")
     if logging:
@@ -167,8 +161,8 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(
         description="Rabbit and Wolf simulation"
     )
-    parser.add_argument("-r","--round", required=False, type=int, default=100, help="Number of Round")
-    parser.add_argument("-s","--seed", required=False, type=int, help="Number of Seed")
+    parser.add_argument("-r","--round", type=int, default=100, help="Number of Round")
+    parser.add_argument("-s","--seed", help="Prefered Seed")
     parser.add_argument("-l","--log", action="store_true", help="Show Chart")
     parser.add_argument("-d","--debug", action="store_true", help="Tracking Lifespan and Hunger of each Object")
     args = parser.parse_args()
