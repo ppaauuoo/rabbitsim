@@ -4,7 +4,7 @@ import seaborn as sns
 import matplotlib.pyplot as plt
 import sys
 import argparse
-from typing import Optional
+from typing import Optional, Any, Dict, List
 
 def rng(func):
     def wrapper(self, *args, **kwargs):
@@ -20,24 +20,29 @@ class Field:
         self.grasses = [Grass() for i in range(grassrange)]
         self.entities = (self.wolfs,self.rabbits)
 
-    def step(self):
+    def step(self,debug:Optional[bool])->None:
         for entity in self.entities:
             for e in entity:
                 e.live()
                 self.update(e)
                 self.consume(e)
                 self.produce(e)
-                self.log(e)
+            if debug:
+                self.debug(entity)
                
         if len(self.grasses) <= 0 :
             self.grasses.append(Grass())
         self.produce(self.grasses[0])
 
     @staticmethod
-    def log(e):
-        print('Log')
-        print(e.name,e.lifespan,e.food)
-        print('+++++++++++++++')
+    def debug(entity:object)->None:
+        if not entity:
+            return
+        print('-----Log-----')
+        for X in entity:
+            print("Type-L-F")
+            print(X.name,X.lifespan,X.food)
+        print('+++++++++++++')
 
     def update(self,X):
         if not X.dead:
@@ -121,6 +126,7 @@ class Wolf(Animal):
         super().__init__(__class__.__name__,nutrient=10,maxfood=200,metabo=2,reproduceage=10,reproducefood=120,maxage=50,lifespan=2)
     
 def main(round,seed:Optional[int]):
+def main(round:int,seed:Optional[int],logging:Optional[bool],debug:Optional[bool]) -> None:
     if seed is None:
         seed = random.randrange(sys.maxsize)
     random.seed(seed)
@@ -138,7 +144,13 @@ def main(round,seed:Optional[int]):
         env.step()
         step += 1
     
+        env.step(debug)
     print(f"Seed:{seed}")
+    if logging:
+        visual(log,seed)
+
+
+def visual(log:List[Dict],seed:Any) -> None:
     data = pd.DataFrame(log)
     
     sns.lineplot(data=data, x='Round', y='Grass', label='Grass')
@@ -149,7 +161,7 @@ def main(round,seed:Optional[int]):
     plt.xlabel('Round')
     plt.ylabel('Population')
     plt.grid(True)
-    plt.show()
+    plt.show()   
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(
@@ -157,8 +169,10 @@ if __name__ == "__main__":
     )
     parser.add_argument("-r","--round", required=False, type=int, default=100, help="Number of Round")
     parser.add_argument("-s","--seed", required=False, type=int, help="Number of Seed")
+    parser.add_argument("-l","--log", action="store_true", help="Show Chart")
+    parser.add_argument("-d","--debug", action="store_true", help="Tracking Lifespan and Hunger of each Object")
     args = parser.parse_args()
 
-    main(args.round,args.seed)
+    main(args.round,args.seed,args.log,args.debug)
     # rabbit survive : 7495055989988120033
 
