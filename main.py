@@ -8,17 +8,19 @@ from typing import Optional, Any, Dict, List
 
 def rng(func):
     def wrapper(self, *args, **kwargs):
-        if random.randrange(2) > 0:
+        rng = random.randrange(self.randomness)
+        if rng > 0:
             return
         return func(self, *args, **kwargs)
     return wrapper
 
 class Field:
-    def __init__(self,wolfrange:int,rabbitrange:int,grassrange:int):
+    def __init__(self,wolfrange:int,rabbitrange:int,grassrange:int,randomness:int):
         self.wolfs = [Wolf() for i in range(wolfrange)]
         self.rabbits = [Rabbit() for i in range(rabbitrange)]
         self.grasses = [Grass() for i in range(grassrange)]
         self.entities = (self.wolfs,self.rabbits)
+        self.randomness = randomness
 
     def step(self,debug:Optional[bool])->None:
         for entity in self.entities:
@@ -38,9 +40,8 @@ class Field:
     def debug(entity:object)->None:
         if not entity:
             return
-        print('-----Log-----')
+        print("Type-L-F")
         for X in entity:
-            print("Type-L-F")
             print(X.name,X.lifespan,X.food)
         print('+++++++++++++')
 
@@ -125,11 +126,11 @@ class Wolf(Animal):
     def __init__(self):
         super().__init__(__class__.__name__,nutrient=10,maxfood=200,metabo=2,reproduceage=10,reproducefood=120,maxage=50,lifespan=2)
     
-def main(round:int,seed:Optional[int],logging:Optional[bool],debug:Optional[bool]) -> None:
+def main(round:int,grass:int,wolf:int,rabbit:int,rng:int,seed:Optional[int],logging:Optional[bool],debug:Optional[bool]) -> None:
     if seed is None:
         seed = random.randrange(sys.maxsize)
     random.seed(seed)
-    env = Field(2,20,400)
+    env = Field(wolf,rabbit,grass,rng)
     log = []
     for step in range(round):
         print(f"Round: {step}")
@@ -140,6 +141,7 @@ def main(round:int,seed:Optional[int],logging:Optional[bool],debug:Optional[bool
         log.append(dict(Round=step,Grass=len(env.grasses),Rabbit=len(env.rabbits),Wolf=len(env.wolfs)))
         env.step(debug)
     print(f"Seed:{seed}")
+    print(f"Randomness:{1/rng*100}%")
     if logging:
         visual(log,seed)
 
@@ -165,8 +167,12 @@ if __name__ == "__main__":
     parser.add_argument("-s","--seed", help="Prefered Seed")
     parser.add_argument("-l","--log", action="store_true", help="Show Chart")
     parser.add_argument("-d","--debug", action="store_true", help="Tracking Lifespan and Hunger of each Object")
+    parser.add_argument("--grass", type=int, default=400, help="Number of Grass")
+    parser.add_argument("--wolf", type=int, default=2, help="Number of Wolf")
+    parser.add_argument("--rabbit", type=int, default=20, help="Number of Rabbit")
+    parser.add_argument("--rng", type=int, default=2, help="Add Randomness to Consume and Reproduce")
     args = parser.parse_args()
 
-    main(args.round,args.seed,args.log,args.debug)
+    main(args.round,args.grass,args.wolf,args.rabbit,args.rng,args.seed,args.log,args.debug)
     # rabbit survive : 7495055989988120033
 
