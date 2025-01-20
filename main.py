@@ -16,10 +16,10 @@ def rng(func):
 
 class Field:
     def __init__(self,wolfrange:int,rabbitrange:int,grassrange:int,randomness:int):
-        self.wolfs = [Wolf() for i in range(wolfrange)]
-        self.rabbits = [Rabbit() for i in range(rabbitrange)]
-        self.grasses = [Grass() for i in range(grassrange)]
-        self.entities = (self.wolfs,self.rabbits)
+        self.wolfs:List[Animal] = [Wolf() for i in range(wolfrange)]
+        self.rabbits:List[Animal] = [Rabbit() for i in range(rabbitrange)]
+        self.grasses:List[Grass] = [Grass() for i in range(grassrange)]
+        self.entities:List[List[Animal]] = [self.wolfs,self.rabbits]
         self.randomness = randomness
 
     def step(self,debug:Optional[bool])->None:
@@ -37,7 +37,7 @@ class Field:
         self.produce(self.grasses[0])
 
     @staticmethod
-    def debug(entity:object)->None:
+    def debug(entity:List[Animal])->None:
         if not entity:
             return
         print("Type-L-F")
@@ -45,7 +45,7 @@ class Field:
             print(X.name,X.lifespan,X.food)
         print('+++++++++++++')
 
-    def update(self,X:object)->None:
+    def update(self,X:Animal)->None:
         if not X.dead:
             return
         match X:
@@ -55,7 +55,7 @@ class Field:
                 self.wolfs.remove(X)
 
     @rng
-    def consume(self,X:object)->None:
+    def consume(self,X:Animal)->None:
         if X.food >= X.maxfood:
             return
         match X:
@@ -71,7 +71,7 @@ class Field:
                     self.rabbits.pop(random.randrange(len(self.rabbits)))
 
     @rng
-    def produce(self,X:object)->None:
+    def produce(self,X:Animal|Grass)->None:
         if isinstance(X,Grass):
             if len(self.grasses) <= X.max:
                 for i in range(X.growth):
