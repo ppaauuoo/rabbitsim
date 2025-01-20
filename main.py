@@ -31,7 +31,7 @@ class Field:
                 self.produce(e)
             if debug:
                 self.debug(entity)
-               
+
         if len(self.grasses) <= 0 :
             self.grasses.append(Grass())
         self.produce(self.grasses[0])
@@ -73,8 +73,9 @@ class Field:
     @rng
     def produce(self,X:object)->None:
         if isinstance(X,Grass):
-            for i in range(X.growth):
-                self.grasses.append(Grass())
+            if len(self.grasses) <= X.max:
+                for i in range(X.growth):
+                    self.grasses.append(Grass())
             return
         if X.food < X.reproducefood or X.age < X.reproduceage:
             return
@@ -103,7 +104,7 @@ class Animal():
         self.lifespan = lifespan
         self.maxlifespan = lifespan
         self.dead = False
-        
+
     def live(self)->None:
         self.age +=1
         self.hunger()
@@ -114,18 +115,18 @@ class Animal():
             self.lifespan -= 1
             return
         self.food -= self.metabo
-        
+
     def die(self)->None:
         if self.lifespan <= 0 or self.age >= self.maxage: self.dead = True
 
 class Rabbit(Animal):
     def __init__(self):
         super().__init__("Rabbit",nutrient=10,maxfood=45,metabo=3,reproduceage=10,reproducefood=40,maxage=25,lifespan=3)
-    
+
 class Wolf(Animal):
     def __init__(self):
         super().__init__(__class__.__name__,nutrient=10,maxfood=200,metabo=2,reproduceage=10,reproducefood=120,maxage=50,lifespan=2)
-    
+
 def main(round:int,grass:int,wolf:int,rabbit:int,rng:int,seed:Optional[int],logging:Optional[bool],debug:Optional[bool]) -> None:
     if seed is None:
         seed = random.randrange(sys.maxsize)
@@ -148,23 +149,23 @@ def main(round:int,grass:int,wolf:int,rabbit:int,rng:int,seed:Optional[int],logg
 
 def visual(log:List[Dict],seed:Any) -> None:
     data = pd.DataFrame(log)
-    
+
     sns.lineplot(data=data, x='Round', y='Grass', label='Grass')
     sns.lineplot(data=data, x='Round', y='Rabbit', label='Rabbit')
     sns.lineplot(data=data, x='Round', y='Wolf', label='Wolf')
-    
+
     plt.title(f"Seed:{seed}")
     plt.xlabel('Round')
     plt.ylabel('Population')
     plt.grid(True)
-    plt.show()   
+    plt.show()
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(
         description="Rabbit and Wolf simulation"
     )
     parser.add_argument("-r","--round", type=int, default=100, help="Number of Round")
-    parser.add_argument("-s","--seed", help="Prefered Seed")
+    parser.add_argument("-s","--seed", type=int, help="Prefered Seed")
     parser.add_argument("-l","--log", action="store_true", help="Show Chart")
     parser.add_argument("-d","--debug", action="store_true", help="Tracking Lifespan and Hunger of each Object")
     parser.add_argument("--grass", type=int, default=400, help="Number of Grass")
@@ -174,5 +175,5 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     main(args.round,args.grass,args.wolf,args.rabbit,args.rng,args.seed,args.log,args.debug)
-    # rabbit survive : 7495055989988120033
+    # rabbit survive : 3198080560977103207
 
